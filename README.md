@@ -27,6 +27,8 @@ Xiaowei Huang
 
 git clone <DLV_repo>
 
+download and install opencv
+
 virtualenv -p python2.7 <path_to_DLV_base_dir>
 
 source <DLV_repo>/bin/activate
