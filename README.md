@@ -38,7 +38,11 @@ Installation Instructions
 
            pip install -r requirements.txt
 
-8. Set up keras environment with a keras config file at ~/.keras/keras.json with the text:
+8. Install graphviz
+
+           Linux - sudo apt-get install graphviz
+
+9. Set up keras environment with a keras config file at ~/.keras/keras.json with the text:
 
            {
                "floatx": "float32",
@@ -48,7 +52,7 @@ Installation Instructions
                "image_dim_ordering": "th"
            }
 
-9. To run the DLV, checkout the desired branch
+10. To run the DLV, checkout the desired branch
 
            git checkout <desired_branch> (eg. origin/orig_dlv, origin/intellifeatures)
            python main.py
