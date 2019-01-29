@@ -69,14 +69,14 @@ def read_dataset():
     # convert class vectors to binary class matrices
     Y_train = np_utils.to_categorical(y_train, nb_classes)
     Y_test = np_utils.to_categorical(y_test, nb_classes)
-    
+
     return (X_train,Y_train,X_test,Y_test, batch_size, nb_epoch)
 
 def build_model():
     """
     define neural network model
     """
-    
+
     model = Sequential()
 
     model.add(Convolution2D(nb_filters, nb_conv, nb_conv,
@@ -108,27 +108,27 @@ def read_model_from_file(weightFile,modelFile):
     define neural network model
     :return: network model
     """
-    
+
     model = build_model()
     model.summary()
-    
+
     weights = sio.loadmat(weightFile)
     model = model_from_json(open(modelFile).read())
     for (idx,lvl) in [(1,0),(2,2),(3,7),(4,10)]:
-        
+
         weight_1 = 2 * idx - 2
         weight_2 = 2 * idx - 1
         model.layers[lvl].set_weights([weights['weights'][0, weight_1], weights['weights'][0, weight_2].flatten()])
 
     return model
-    
 
-    
+
+
 """
    The following function gets the activations for a particular layer
-   for an image in the test set. 
-   FIXME: ideally I would like to be able to 
-          get activations for a particular layer from the inputs of another layer. 
+   for an image in the test set.
+   FIXME: ideally I would like to be able to
+          get activations for a particular layer from the inputs of another layer.
 """
 
 def getImage(model,n_in_tests):
@@ -137,11 +137,11 @@ def getImage(model,n_in_tests):
     X_test = X_test.reshape(X_test.shape[0], 1, img_rows, img_cols)
     X_test = X_test.astype('float32')
     X_test /= 255
-    
+
     Y_test = np_utils.to_categorical(y_test, nb_classes)
     image = X_test[n_in_tests:n_in_tests+1]
     return np.squeeze(image)
-    
+
 def readImage(path):
 
     import cv2
@@ -151,9 +151,9 @@ def readImage(path):
     #im = im.transpose(2, 0, 1)
 
     print("ERROR: currently the reading of MNIST images are not correct, so the classifications are incorrect. ")
-    
 
-    
+
+
     return np.squeeze(im)
 
 def getActivationValue(model,layer,image):
@@ -162,20 +162,20 @@ def getActivationValue(model,layer,image):
     activations = get_activations(model, layer, image)
     return np.squeeze(activations)
 
-    
+
 def get_activations(model, layer, X_batch):
     get_activations = K.function([model.layers[0].input, K.learning_phase()], model.layers[layer].output)
     activations = get_activations([X_batch,0])
     return activations
-    
+
 def predictWithImage(model,newInput):
 
     newInput2 = np.expand_dims(np.expand_dims(newInput, axis=0), axis=0)
     predictValue = model.predict(newInput2)
     newClass = np.argmax(np.ravel(predictValue))
     confident = np.amax(np.ravel(predictValue))
-    return (newClass,confident)    
-    
+    return (newClass,confident)
+
 def getWeightVector(model, layer2Consider):
     weightVector = []
     biasVector = []
@@ -183,64 +183,64 @@ def getWeightVector(model, layer2Consider):
     for layer in model.layers:
     	 index=model.layers.index(layer)
          h=layer.get_weights()
-         
-         if len(h) > 0 and index in [0,2]  and index <= layer2Consider: 
+
+         if len(h) > 0 and index in [0,2]  and index <= layer2Consider:
          # for convolutional layer
              ws = h[0]
              bs = h[1]
-             
+
              #print("layer =" + str(index))
              #print(layer.input_shape)
              #print(ws.shape)
              #print(bs.shape)
-             
+
              # number of filters in the previous layer
              m = len(ws)
              # number of features in the previous layer
-             # every feature is represented as a matrix 
+             # every feature is represented as a matrix
              n = len(ws[0])
-             
+
              for i in range(1,m+1):
                  biasVector.append((index,i,h[1][i-1]))
-             
+
              for i in range(1,m+1):
                  v = ws[i-1]
-                 for j in range(1,n+1): 
+                 for j in range(1,n+1):
                      # (feature, filter, matrix)
                      weightVector.append(((index,j),(index,i),v[j-1]))
-                     
-         elif len(h) > 0 and index in [7,10]  and index <= layer2Consider: 
+
+         elif len(h) > 0 and index in [7,10]  and index <= layer2Consider:
          # for fully-connected layer
              ws = h[0]
              bs = h[1]
-             
+
              # number of nodes in the previous layer
              m = len(ws)
              # number of nodes in the current layer
              n = len(ws[0])
-             
+
              for j in range(1,n+1):
                  biasVector.append((index,j,h[1][j-1]))
-             
+
              for i in range(1,m+1):
                  v = ws[i-1]
-                 for j in range(1,n+1): 
+                 for j in range(1,n+1):
                      weightVector.append(((index-1,i),(index,j),v[j-1]))
          #else: print "\n"
-         
-    return (weightVector,biasVector)        
+
+    return (weightVector,biasVector)
 
 def getConfig(model):
 
     config = model.get_config()
     config = [ getLayerName(dict) for dict in config ]
     config = zip(range(len(config)),config)
-    return config 
-    
+    return config
+
 def getLayerName(dict):
 
     className = dict.get('class_name')
-    if className == 'Activation': 
+    if className == 'Activation':
         return dict.get('config').get('activation')
-    else: 
+    else:
         return className
