@@ -25,4 +25,17 @@ Please use the file ''configuration.py'' to set the parameters for the system to
 
 Xiaowei Huang
 
+git clone <DLV_repo>
+
+virtualenv -p python2.7 <path_to_DLV_base_dir>
+
+source <DLV_repo>/bin/activate
+
+git clone https://github.com/Z3Prover/z3.git
+cd <z3_base_dir>
+python scripts/mk_make.py --python
+cd build
+make -j4
+make install
+
 pip install -r requirements.txt
