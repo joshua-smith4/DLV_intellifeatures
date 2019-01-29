@@ -24,3 +24,5 @@ Please use the file ''configuration.py'' to set the parameters for the system to
 
 
 Xiaowei Huang
+
+pip install -r requirements.txt

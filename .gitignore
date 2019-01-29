@@ -12,3 +12,4 @@ pyvenv.cfg
 pip-selfcheck.json
 *.pyc
 networks/GTSRB/Final_Training/*
+data/*
