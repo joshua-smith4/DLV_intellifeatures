@@ -5,6 +5,7 @@ cvxopt==1.2.0
 cycler==0.10.0
 dask==1.1.1
 decorator==4.3.2
+h5py==2.9.0
 Keras==1.2.2
 kiwisolver==1.0.1
 matplotlib==2.2.2
