@@ -33,25 +33,34 @@ img_channels = 3
 def load_gtsrb_training_data(data_path):
     ''' data_path - path do directory containing folders of all
     '''
-    Xtrain = []
-    Ytrain = []
+    imgs = []
+    labels = []
     for i in range(nb_classes):
         direct_name = str(i).zfill(5)
         direct_path = os.path.join(data_path, direct_name)
-        stat_file = os.path.join(direct_path, 'GT-'+direct_name+'.csv')
+        stat_file = os.path.join(direct_path, 'GT-' + direct_name + '.csv')
         assert(os.path.exists(stat_file))
         with open(stat_file) as f:
             reader = csv.reader(f, delimiter=';')
             for row in reader:
                 file_path = os.path.join(direct_path, row[0])
+                if not file_path.endswith('.ppm'):
+                    continue
                 img = cv2.imread(file_path)
+                img = cv2.resize(img, (img_rows, img_cols))
+                img = np.rollaxis(img, -1)
+                imgs += [img]
+                labels += [i]
 
+    X = np.array(imgs, dtype=np.float32) / 255.0
+    return X, Y
 
 
 def read_dataset():
 
     # the data, shuffled and split between train and test sets
-    (X_train, y_train), (X_test, y_test) = cifar10.load_data()
+    (X_train, y_train) = load_gtsrb_training_data(
+        os.path.join(directory_model_string, 'Final_Training', 'Images'))
     print('X_train shape:', X_train.shape)
     print(X_train.shape[0], 'train samples')
     print(X_test.shape[0], 'test samples')
@@ -60,33 +69,36 @@ def read_dataset():
     Y_train = np_utils.to_categorical(y_train, nb_classes)
     Y_test = np_utils.to_categorical(y_test, nb_classes)
 
-    return (X_train,Y_train,X_test,Y_test, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch, data_augmentation)
+    return (X_train, Y_train, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch)
+
 
 def build_model(img_channels, img_rows, img_cols, nb_classes):
 
     model = Sequential()
 
-    model.add(Convolution2D(32, 3, 3, border_mode='same',
-                        input_shape=(img_channels, img_rows, img_cols)))
-    model.add(Activation('relu'))
-    model.add(Convolution2D(32, 3, 3))
-    model.add(Activation('relu'))
+    model.add(Conv2D(32, 3, 3, border_mode='same',
+                     input_shape=(img_channels, img_rows, img_cols),
+                     activation='relu'))
+    model.add(Conv2D(32, 3, 3, activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
+    model.add(Dropout(0.2))
 
-    model.add(Convolution2D(64, 3, 3, border_mode='same'))
-    model.add(Activation('relu'))
-    model.add(Convolution2D(64, 3, 3))
-    model.add(Activation('relu'))
+    model.add(Conv2D(64, 3, 3, border_mode='same',
+                     activation='relu'))
+    model.add(Conv2D(64, 3, 3, activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
+    model.add(Dropout(0.2))
+
+    model.add(Conv2D(128, 3, 3, border_mode='same',
+                     activation='relu'))
+    model.add(Conv2D(128, 3, 3, activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.2))
 
     model.add(Flatten())
-    model.add(Dense(512))
-    model.add(Activation('relu'))
+    model.add(Dense(512, activation='relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(nb_classes))
-    model.add(Activation('softmax'))
+    model.add(Dense(nb_classes, activation='softmax'))
 
     # let's train the model using SGD + momentum (how original).
     sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
@@ -96,7 +108,8 @@ def build_model(img_channels, img_rows, img_cols, nb_classes):
 
     return model
 
-def read_model_from_file(img_channels, img_rows, img_cols, nb_classes, weightFile,modelFile):
+
+def read_model_from_file(img_channels, img_rows, img_cols, nb_classes, weightFile, modelFile):
     """
     define neural network model
     :return: network model
@@ -107,13 +120,15 @@ def read_model_from_file(img_channels, img_rows, img_cols, nb_classes, weightFil
 
     weights = sio.loadmat(weightFile)
     model = model_from_json(open(modelFile).read())
-    for (idx,lvl) in [(1,0),(2,2),(3,6),(4,8),(5,13),(6,16)]:
+    for (idx, lvl) in [(1, 0), (2, 2), (3, 6), (4, 8), (5, 13), (6, 16)]:
 
         weight_1 = 2 * idx - 2
         weight_2 = 2 * idx - 1
-        model.layers[lvl].set_weights([weights['weights'][0, weight_1], weights['weights'][0, weight_2].flatten()])
+        model.layers[lvl].set_weights(
+            [weights['weights'][0, weight_1], weights['weights'][0, weight_2].flatten()])
 
     return model
+
 
 """
    The following function gets the activations for a particular layer
@@ -123,22 +138,22 @@ def read_model_from_file(img_channels, img_rows, img_cols, nb_classes, weightFil
 """
 
 
-def getImage(model,n_in_tests):
+def getImage(model, n_in_tests):
 
     (X_train, y_train), (X_test, y_test) = cifar10.load_data()
     X_test = X_test.reshape(X_test.shape[0], img_channels, img_rows, img_cols)
     X_test = X_test.astype('float32')
     X_test = X_test.astype('float32')
 
-
     X_test /= 255
 
     Y_test = np_utils.to_categorical(y_test, nb_classes)
-    image = X_test[n_in_tests:n_in_tests+1]
+    image = X_test[n_in_tests:n_in_tests + 1]
 
-    #print(np.amax(image),np.amin(image))
+    # print(np.amax(image),np.amin(image))
 
     return np.squeeze(image)
+
 
 def readImage(path):
 
@@ -148,12 +163,12 @@ def readImage(path):
     im = im / 255
     im = im.transpose(2, 0, 1)
 
-    #print(np.amax(im),np.amin(im))
-
+    # print(np.amax(im),np.amin(im))
 
     return np.squeeze(im)
 
-def getActivationValue(model,layer,image):
+
+def getActivationValue(model, layer, image):
 
     image = np.expand_dims(image, axis=0)
     activations = get_activations(model, layer, image)
@@ -161,80 +176,84 @@ def getActivationValue(model,layer,image):
 
 
 def get_activations(model, layer, X_batch):
-    get_activations = K.function([model.layers[0].input, K.learning_phase()], model.layers[layer].output)
-    activations = get_activations([X_batch,0])
+    get_activations = K.function(
+        [model.layers[0].input, K.learning_phase()], model.layers[layer].output)
+    activations = get_activations([X_batch, 0])
     return activations
 
-def predictWithImage(model,newInput):
+
+def predictWithImage(model, newInput):
 
     newInput_for_predict = copy.deepcopy(newInput)
     newInput2 = np.expand_dims(newInput_for_predict, axis=0)
     predictValue = model.predict(newInput2)
     newClass = np.argmax(np.ravel(predictValue))
     confident = np.amax(np.ravel(predictValue))
-    return (newClass,confident)
+    return (newClass, confident)
+
 
 def getWeightVector(model, layer2Consider):
     weightVector = []
     biasVector = []
 
     for layer in model.layers:
-    	 index=model.layers.index(layer)
-         h=layer.get_weights()
+        index = model.layers.index(layer)
+        h = layer.get_weights()
 
-         if len(h) > 0 and index in [0,2,6,8]  and index <= layer2Consider :
-         # for convolutional layer
-             ws = h[0]
-             bs = h[1]
+        if len(h) > 0 and index in [0, 2, 6, 8] and index <= layer2Consider:
+            # for convolutional layer
+            ws = h[0]
+            bs = h[1]
 
-             #print("layer =" + str(index))
-             #print(layer.input_shape)
-             #print(ws.shape)
-             #print(bs.shape)
+            #print("layer =" + str(index))
+            # print(layer.input_shape)
+            # print(ws.shape)
+            # print(bs.shape)
 
+            # number of filters in the previous layer
+            m = len(ws)
+            # number of features in the previous layer
+            # every feature is represented as a matrix
+            n = len(ws[0])
 
-             # number of filters in the previous layer
-             m = len(ws)
-             # number of features in the previous layer
-             # every feature is represented as a matrix
-             n = len(ws[0])
+            for i in range(1, m + 1):
+                biasVector.append((index, i, h[1][i - 1]))
 
-             for i in range(1,m+1):
-                 biasVector.append((index,i,h[1][i-1]))
+            for i in range(1, m + 1):
+                v = ws[i - 1]
+                for j in range(1, n + 1):
+                    # (feature, filter, matrix)
+                    weightVector.append(((index, j), (index, i), v[j - 1]))
 
-             for i in range(1,m+1):
-                 v = ws[i-1]
-                 for j in range(1,n+1):
-                     # (feature, filter, matrix)
-                     weightVector.append(((index,j),(index,i),v[j-1]))
+        elif len(h) > 0 and index in [13, 16] and index <= layer2Consider:
+            # for fully-connected layer
+            ws = h[0]
+            bs = h[1]
 
-         elif len(h) > 0 and index in [13,16]  and index <= layer2Consider:
-         # for fully-connected layer
-             ws = h[0]
-             bs = h[1]
+            # number of nodes in the previous layer
+            m = len(ws)
+            # number of nodes in the current layer
+            n = len(ws[0])
 
-             # number of nodes in the previous layer
-             m = len(ws)
-             # number of nodes in the current layer
-             n = len(ws[0])
+            for j in range(1, n + 1):
+                biasVector.append((index, j, h[1][j - 1]))
 
-             for j in range(1,n+1):
-                 biasVector.append((index,j,h[1][j-1]))
+            for i in range(1, m + 1):
+                v = ws[i - 1]
+                for j in range(1, n + 1):
+                    weightVector.append(((index - 1, i), (index, j), v[j - 1]))
+        # else: print "\n"
 
-             for i in range(1,m+1):
-                 v = ws[i-1]
-                 for j in range(1,n+1):
-                     weightVector.append(((index-1,i),(index,j),v[j-1]))
-         #else: print "\n"
+    return (weightVector, biasVector)
 
-    return (weightVector,biasVector)
 
 def getConfig(model):
 
     config = model.get_config()
-    config = [ getLayerName(dict) for dict in config ]
-    config = zip(range(len(config)),config)
+    config = [getLayerName(dict) for dict in config]
+    config = zip(range(len(config)), config)
     return config
+
 
 def getLayerName(dict):
 
