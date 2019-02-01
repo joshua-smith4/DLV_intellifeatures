@@ -16,7 +16,7 @@ from keras.utils import np_utils
 
 
 # for cifar10
-from keras.datasets import cifar10
+# from keras.datasets import cifar10
 from keras.optimizers import SGD
 #
 
@@ -29,6 +29,11 @@ data_augmentation = True
 img_rows, img_cols = 32, 32
 # the CIFAR10 images are RGB
 img_channels = 3
+
+
+def load_gtsrb_training_data(data_path):
+    ''' data_path - path do directory containing folders of all 
+    '''
 
 def read_dataset():
 

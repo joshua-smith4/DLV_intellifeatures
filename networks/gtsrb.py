@@ -5,14 +5,13 @@ import numpy as np
 
 import PIL.Image
 
-
+# TODO: find real labels
 def LABELS(index):
-    labels = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog',
-          'horse', 'ship', 'truck']
-    return labels[index]
+    return str(index)
+
 
 def save(layer,image,filename):
-    """
+    """ Save image in [filename] destination
     """
     import cv2
     import copy
@@ -20,24 +19,9 @@ def save(layer,image,filename):
     image_cv = copy.deepcopy(image)
     image_cv = image_cv.transpose(1, 2, 0)
 
-    #print(np.amax(image),np.amin(image))
+    params = [cv2.IMWRITE_PXM_BINARY, 1]
 
-    params = list()
-    params.append(cv2.IMWRITE_PNG_COMPRESSION)
-    params.append(0)
-
-    cv2.imwrite(filename, image_cv * 255.0, params)
-
-    # from matplotlib import pyplot
-    # import matplotlib as mpl
-    # fig = pyplot.figure()
-    # ax = fig.add_subplot(1,1,1)
-    # # image = image.reshape(3,32,32).transpose(1,2,0)
-    # imgplot = ax.imshow(image.T, cmap=mpl.cm.Greys)
-    # imgplot.set_interpolation('nearest')
-    # ax.xaxis.set_ticks_position('top')
-    # ax.yaxis.set_ticks_position('left')
-    # pyplot.savefig(filename)
+    cv2.imwrite(filename, image_cv, params)
 
 
 def show(image):
