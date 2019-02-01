@@ -5,6 +5,9 @@ from __future__ import print_function
 import scipy.io as sio
 import numpy as np
 import copy
+import os
+import csv
+import cv2
 
 from keras.models import model_from_json
 from keras.models import Sequential
@@ -13,27 +16,37 @@ from keras.layers import Convolution2D, MaxPooling2D
 from keras import backend as K
 from keras.utils import np_utils
 
-
-
-# for cifar10
-# from keras.datasets import cifar10
 from keras.optimizers import SGD
 #
 
 batch_size = 32
-nb_classes = 10
+nb_classes = 43
 nb_epoch = 200
-data_augmentation = True
+# data_augmentation = True
 
 # input image dimensions
-img_rows, img_cols = 32, 32
+img_rows, img_cols = 48, 48
 # the CIFAR10 images are RGB
 img_channels = 3
 
 
 def load_gtsrb_training_data(data_path):
-    ''' data_path - path do directory containing folders of all 
+    ''' data_path - path do directory containing folders of all
     '''
+    Xtrain = []
+    Ytrain = []
+    for i in range(nb_classes):
+        direct_name = str(i).zfill(5)
+        direct_path = os.path.join(data_path, direct_name)
+        stat_file = os.path.join(direct_path, 'GT-'+direct_name+'.csv')
+        assert(os.path.exists(stat_file))
+        with open(stat_file) as f:
+            reader = csv.reader(f, delimiter=';')
+            for row in reader:
+                file_path = os.path.join(direct_path, row[0])
+                img = cv2.imread(file_path)
+
+
 
 def read_dataset():
 
