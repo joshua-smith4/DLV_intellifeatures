@@ -11,13 +11,14 @@ import mnist_network as NN_mnist
 import cifar10_network as NN_cifar10
 import imageNet_network as NN_imageNet
 import twoDcurve_network as NN_twoDcurve
+import gtsrb_network as NN_gtsrb
 
 
 import mnist
 import cifar10
 import imageNet
 import twoDcurve
-
+import gtsrb
 
 def network_parameters(dataset):
 
@@ -28,7 +29,7 @@ def network_parameters(dataset):
 #
 #######################################################
 
-    if dataset in ["mnist","cifar10","imageNet"] :
+    if dataset in ["mnist","cifar10","imageNet","gtsrb"] :
         boundOfPixelValue = [0,1]
     elif dataset == "twoDcurve":
         boundOfPixelValue = [0, 2 * np.pi]
@@ -101,6 +102,18 @@ def network_parameters(dataset):
         errorBounds = {}
         errorBounds[-1] = 125
 
+    elif dataset == "gtsrb":
+        NN = NN_gtsrb
+        dataBasics = gtsrb
+        directory_model_string = makedirectory("networks/GTSRB")
+        directory_statistics_string = makedirectory("data/gtsrb_statistics")
+        directory_pic_string = makedirectory("data/gtsrb_pic")
+
+        featureDims = 5
+        span = 255/float(255)
+        numSpan = 1
+        errorBounds = {}
+        errorBounds[-1] = 1.0
 #######################################################
 #
 #  size of the filter used in convolutional layers

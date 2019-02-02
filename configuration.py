@@ -7,9 +7,18 @@ author: Xiaowei Huang
 
 from network_configuration import *
 
+# from networks.networkBasics import *
+
 from usual_configuration import *
+import numpy as np
+from keras import backend as K
+import os
 
+import argparse
 
+parser = argparse.ArgumentParser(description='DLV Intellifeatures')
+parser.add_argument('--dataset', required=True)
+args = parser.parse_args()
 #######################################################
 #
 #  To find counterexample or do safety checking
@@ -28,8 +37,10 @@ task = "safety_check"
 # which dataset to work with
 #dataset = "twoDcurve"
 #dataset = "mnist"
-dataset = "cifar10"
+#dataset = "cifar10"
 #dataset = "imageNet"
+#dataset = "gtsrb"
+dataset = args.dataset
 
 # decide whether to take an experimental configuration
 # for specific dataset
@@ -54,7 +65,7 @@ dataProcessingBatchNum = 50
 
 span = 255/float(255)   # s_p in the paper
 numSpan = 1.0          # m_p in the paper
-featureDims = 5         # dims_{k,f} in the paper
+# featureDims = 40         # dims_{k,f} in the paper
 
 # error bounds, defaulted to be 1.0
 # \varepsilon in the paper
@@ -68,6 +79,54 @@ errorBounds[-1] = 1.0
 (featureDims,span,numSpan,errorBounds,boundOfPixelValue,NN,dataBasics,directory_model_string,directory_statistics_string,directory_pic_string,filterSize) = network_parameters(dataset)
 
 
+def getAverages():
+    if dataset == "mnist":
+        (X_train, Y_train, X_test, Y_test, batch_size, nb_epoch) = NN.read_dataset()
+        model = NN.read_model_from_file('%s/mnist.mat'%directory_model_string,'%s/mnist.json'%directory_model_string)
+    elif dataset == "cifar10":
+        (X_train,Y_train,X_test,Y_test, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch, data_augmentation) = NN.read_dataset()
+        model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, '%s/cifar10.mat'%directory_model_string,'%s/cifar10.json'%directory_model_string)
+    elif dataset == "imageNet":
+	    pass
+    elif dataset == "gtsrb":
+        (X_train, Y_train, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch) = NN.read_dataset()
+        model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, 'nothing', os.path.join(directory_model_string,'gtsrb-model.h5'))
+    print(X_train.shape)
+    print(Y_train.shape)
+    Y_train_noncategorical = np.argmax(Y_train, axis=1)
+    averages = []
+    input_averages = np.zeros((Y_train.shape[1], 1, X_train.shape[1], X_train[0][0].shape[0], X_train[0][0].shape[1]), dtype=np.float32)
+    print('shape {} {}'.format(X_train[0][0].shape, input_averages.shape))
+    averages.append(input_averages)
+    counts = np.zeros((Y_train.shape[1]), dtype=np.uint32)
+
+    for i in range(len(X_train)):
+        averages[0][Y_train_noncategorical[i]][0][0] += X_train[i][0]
+        counts[Y_train_noncategorical[i]] += 1
+
+    for i in range(len(counts)):
+        averages[0][i][0][0] /= counts[i]
+
+    for i in range(len(model.layers)):
+        layerType = [ lt for (l,lt) in NN.getConfig(model) if i == l ]
+        if len(layerType) > 0: layerType = layerType[0]
+        print('layer type: {}'.format(layerType))
+        layer_input_shape = [1 if x is None else x for x in model.layers[i].output_shape]
+        layer_avg = np.zeros([Y_train.shape[1],] + layer_input_shape, dtype=np.float32)
+        for j in range(len(counts)):
+            lastAverage = averages[i][j]
+            print('last average shape {}'.format(lastAverage.shape))
+            if layerType in ['Dropout']:
+                layer_avg[j] = lastAverage
+            else:
+                get_output = K.function([model.layers[i].input],[model.layers[i].output])
+                layer_avg[j] = get_output([lastAverage])[0]
+            # print(layer_avg[j].shape)
+        averages.append(layer_avg)
+    return averages
+
+averages = getAverages()
+print('finished averages')
 #######################################################
 #
 #  2. The following are parameters for safety checking
@@ -202,6 +261,7 @@ regionSynthMethod = "condense"
 # this parameter tells how many elements will be used to
 #  implement a manipulation from a single element of the previous layer
 refinementRate = 1
+
 
 def getManipulatedFeatureNumber(model,numDimsToMani,layer2Consider):
 

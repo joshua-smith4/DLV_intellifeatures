@@ -11,6 +11,7 @@ sys.path.append('networks')
 sys.path.append('safety_check')
 sys.path.append('adversary_generation')
 
+import os
 import time
 import numpy as np
 import scipy.io as sio
@@ -140,6 +141,12 @@ def loadData():
         (X_train,Y_train,X_test,Y_test, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch, data_augmentation) = NN.read_dataset()
         model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, '%s/cifar10.mat'%directory_model_string,'%s/cifar10.json'%directory_model_string)
         model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
+        print("Model loaded!")
+
+    elif whichMode == "read" and dataset == "gtsrb":
+        print("Start loading model ... ")
+        (X_train,Y_train,img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch) = NN.read_dataset()
+        model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, 'nothing',os.path.join(directory_model_string,'gtsrb-model.h5'))
         print("Model loaded!")
 
     elif whichMode == "train" and dataset == "imageNet":
