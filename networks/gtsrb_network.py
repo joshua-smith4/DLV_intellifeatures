@@ -109,7 +109,7 @@ def read_model_from_file(img_channels, img_rows, img_cols, nb_classes, weightFil
     :return: network model
     """
 
-    model = load_model(modelFile))
+    model = load_model(modelFile)
     model.summary()
 
     return model
