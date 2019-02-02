@@ -33,9 +33,9 @@ task = "safety_check"
 # which dataset to work with
 #dataset = "twoDcurve"
 #dataset = "mnist"
-# dataset = "cifar10"
+dataset = "cifar10"
 #dataset = "imageNet"
-dataset = "gtsrb"
+#dataset = "gtsrb"
 
 # decide whether to take an experimental configuration
 # for specific dataset
