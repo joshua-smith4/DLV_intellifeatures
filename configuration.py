@@ -14,7 +14,11 @@ import numpy as np
 from keras import backend as K
 import os
 
+import argparse
 
+parser = argparse.ArgumentParser(description='DLV Intellifeatures')
+parser.add_argument('--dataset', required=True)
+args = parser.parse_args()
 #######################################################
 #
 #  To find counterexample or do safety checking
