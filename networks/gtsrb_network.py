@@ -55,7 +55,7 @@ def load_gtsrb_training_data(data_path):
                 labels += [i]
 
     X = np.array(imgs, dtype=np.float32) / 255.0
-    return X, Y
+    return X, labels
 
 dataset_location = 'networks/GTSRB'
 
@@ -64,7 +64,7 @@ def read_dataset():
     (X_train, y_train) = load_gtsrb_training_data(
         os.path.join(dataset_location, 'Final_Training', 'Images'))
     print('X_train shape:', X_train.shape)
-    print(X_train.shape[0], 'train samples')
+    # print(X_train.shape[0], 'train samples')
 
     # convert class vectors to binary class matrices
     Y_train = np_utils.to_categorical(y_train, nb_classes)
