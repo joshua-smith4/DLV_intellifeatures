@@ -122,7 +122,7 @@ def read_model_from_file(img_channels, img_rows, img_cols, nb_classes, weightFil
           get activations for a particular layer from the inputs of another layer.
 """
 
-X_test_verif, Y_test_verif = read_dataset()
+(X_test_verif, Y_test_verif,_,_,_,_,_,_) = read_dataset()
 
 def getImage(model, n_in_tests):
     return X_test_verif[n_in_tests]
