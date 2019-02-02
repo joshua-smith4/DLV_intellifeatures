@@ -8,8 +8,10 @@ import copy
 import os
 import csv
 import cv2
+from sklearn.utils import shuffle
 
 from keras.models import model_from_json
+from keras.models import load_model
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Convolution2D, MaxPooling2D
@@ -63,12 +65,10 @@ def read_dataset():
         os.path.join(directory_model_string, 'Final_Training', 'Images'))
     print('X_train shape:', X_train.shape)
     print(X_train.shape[0], 'train samples')
-    print(X_test.shape[0], 'test samples')
 
     # convert class vectors to binary class matrices
     Y_train = np_utils.to_categorical(y_train, nb_classes)
-    Y_test = np_utils.to_categorical(y_test, nb_classes)
-
+    X_train, Y_train = shuffle(X_train, Y_train, random_state=0)
     return (X_train, Y_train, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch)
 
 
@@ -100,12 +100,6 @@ def build_model(img_channels, img_rows, img_cols, nb_classes):
     model.add(Dropout(0.5))
     model.add(Dense(nb_classes, activation='softmax'))
 
-    # let's train the model using SGD + momentum (how original).
-    sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-    model.compile(loss='categorical_crossentropy',
-                  optimizer=sgd,
-                  metrics=['accuracy'])
-
     return model
 
 
@@ -115,17 +109,8 @@ def read_model_from_file(img_channels, img_rows, img_cols, nb_classes, weightFil
     :return: network model
     """
 
-    model = build_model(img_channels, img_rows, img_cols, nb_classes)
+    model = load_model(os.path.join(directory_model_string, 'gtsrb-model.h5'))
     model.summary()
-
-    weights = sio.loadmat(weightFile)
-    model = model_from_json(open(modelFile).read())
-    for (idx, lvl) in [(1, 0), (2, 2), (3, 6), (4, 8), (5, 13), (6, 16)]:
-
-        weight_1 = 2 * idx - 2
-        weight_2 = 2 * idx - 1
-        model.layers[lvl].set_weights(
-            [weights['weights'][0, weight_1], weights['weights'][0, weight_2].flatten()])
 
     return model
 
@@ -137,33 +122,16 @@ def read_model_from_file(img_channels, img_rows, img_cols, nb_classes, weightFil
           get activations for a particular layer from the inputs of another layer.
 """
 
+X_test_verif, Y_test_verif = read_dataset()
 
 def getImage(model, n_in_tests):
-
-    (X_train, y_train), (X_test, y_test) = cifar10.load_data()
-    X_test = X_test.reshape(X_test.shape[0], img_channels, img_rows, img_cols)
-    X_test = X_test.astype('float32')
-    X_test = X_test.astype('float32')
-
-    X_test /= 255
-
-    Y_test = np_utils.to_categorical(y_test, nb_classes)
-    image = X_test[n_in_tests:n_in_tests + 1]
-
-    # print(np.amax(image),np.amin(image))
-
-    return np.squeeze(image)
+    return X_test_verif[n_in_tests]
 
 
 def readImage(path):
-
-    import cv2
-
     im = cv2.resize(cv2.imread(path), (img_rows, img_cols)).astype('float32')
-    im = im / 255
-    im = im.transpose(2, 0, 1)
-
-    # print(np.amax(im),np.amin(im))
+    im = im / 255.0
+    im = np.rollaxis(im, -1)
 
     return np.squeeze(im)
 
@@ -200,7 +168,7 @@ def getWeightVector(model, layer2Consider):
         index = model.layers.index(layer)
         h = layer.get_weights()
 
-        if len(h) > 0 and index in [0, 2, 6, 8] and index <= layer2Consider:
+        if len(h) > 0 and index in [0,2,6,8,12,14,] and index <= layer2Consider:
             # for convolutional layer
             ws = h[0]
             bs = h[1]
@@ -225,7 +193,7 @@ def getWeightVector(model, layer2Consider):
                     # (feature, filter, matrix)
                     weightVector.append(((index, j), (index, i), v[j - 1]))
 
-        elif len(h) > 0 and index in [13, 16] and index <= layer2Consider:
+        elif len(h) > 0 and index in [19, 22] and index <= layer2Consider:
             # for fully-connected layer
             ws = h[0]
             bs = h[1]

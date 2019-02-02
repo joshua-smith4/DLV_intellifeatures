@@ -12,6 +12,7 @@ from network_configuration import *
 from usual_configuration import *
 import numpy as np
 from keras import backend as K
+import os
 
 
 #######################################################
@@ -32,8 +33,9 @@ task = "safety_check"
 # which dataset to work with
 #dataset = "twoDcurve"
 #dataset = "mnist"
-dataset = "cifar10"
+# dataset = "cifar10"
 #dataset = "imageNet"
+dataset = "gtsrb"
 
 # decide whether to take an experimental configuration
 # for specific dataset
@@ -80,7 +82,10 @@ def getAverages():
         (X_train,Y_train,X_test,Y_test, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch, data_augmentation) = NN.read_dataset()
         model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, '%s/cifar10.mat'%directory_model_string,'%s/cifar10.json'%directory_model_string)
     elif dataset == "imageNet":
-	pass
+	    pass
+    elif dataset == "gtsrb":
+        (X_train, Y_train, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch) = NN.read_dataset()
+        model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, 'nothing', os.path.join(directory_model_string,'gtsrb-model.h5'))
     print(X_train.shape)
     print(Y_train.shape)
     Y_train_noncategorical = np.argmax(Y_train, axis=1)
