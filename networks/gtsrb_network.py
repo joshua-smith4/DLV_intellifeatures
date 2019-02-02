@@ -57,12 +57,12 @@ def load_gtsrb_training_data(data_path):
     X = np.array(imgs, dtype=np.float32) / 255.0
     return X, Y
 
+dataset_location = 'networks/GTSRB'
 
 def read_dataset():
 
-    # the data, shuffled and split between train and test sets
     (X_train, y_train) = load_gtsrb_training_data(
-        os.path.join(directory_model_string, 'Final_Training', 'Images'))
+        os.path.join(dataset_location, 'Final_Training', 'Images'))
     print('X_train shape:', X_train.shape)
     print(X_train.shape[0], 'train samples')
 
@@ -109,7 +109,7 @@ def read_model_from_file(img_channels, img_rows, img_cols, nb_classes, weightFil
     :return: network model
     """
 
-    model = load_model(os.path.join(directory_model_string, 'gtsrb-model.h5'))
+    model = load_model(modelFile))
     model.summary()
 
     return model
