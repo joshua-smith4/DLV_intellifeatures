@@ -158,6 +158,7 @@ def loadData():
             nb_epoch=30,
             validation_data=(X_test,Y_test),
             verbose=1,
+            shuffle=True,
             callbacks=[LearningRateScheduler(lr_schedule),
                 ModelCheckpoint(os.path.join(directory_model_string, 'gtsrb-model.h5'), save_best_only=True)]
                 )
