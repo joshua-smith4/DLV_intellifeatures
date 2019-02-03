@@ -54,7 +54,7 @@ def load_gtsrb_training_data(data_path):
                 imgs += [img]
                 labels += [i]
 
-    X = np.array(imgs, dtype=np.float32) / 255.0
+    X = np.array(imgs, dtype=np.float32)
     return X, labels
 
 dataset_location = 'networks/GTSRB'
@@ -130,7 +130,6 @@ def getImage(model, n_in_tests):
 
 def readImage(path):
     im = cv2.resize(cv2.imread(path), (img_rows, img_cols)).astype('float32')
-    im = im / 255.0
     im = np.rollaxis(im, -1)
 
     return np.squeeze(im)
