@@ -53,23 +53,29 @@ def load_gtsrb_training_data(data_path):
                 img = np.rollaxis(img, -1)
                 imgs += [img]
                 labels += [i]
-
-    X = np.array(imgs, dtype=np.float32)
-    return X, labels
+    num_samples = len(imgs)
+    boundary = int(num_samples*0.8)
+    X_train = np.array(imgs[0:boundary], dtype=np.float32) / 255.0
+    X_test = np.array(imgs[boundary:], dtype=np.float32) / 255.0
+    Y_train = labels[0:boundary]
+    Y_test = labels[boundary:]
+    return X_train, Y_train, X_test, Y_test
 
 dataset_location = 'networks/GTSRB'
 
 def read_dataset():
 
-    (X_train, y_train) = load_gtsrb_training_data(
+    (X_train, Y_train, X_test, Y_test) = load_gtsrb_training_data(
         os.path.join(dataset_location, 'Final_Training', 'Images'))
     print('X_train shape:', X_train.shape)
     # print(X_train.shape[0], 'train samples')
 
     # convert class vectors to binary class matrices
-    Y_train = np_utils.to_categorical(y_train, nb_classes)
+    Y_train = np_utils.to_categorical(Y_train, nb_classes)
+    Y_test = np_utils.to_categorical(Y_test, nb_classes)
     X_train, Y_train = shuffle(X_train, Y_train, random_state=0)
-    return (X_train, Y_train, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch)
+    X_test, Y_test = shuffle(X_test, Y_test, random_state=0)
+    return (X_train, Y_train, X_test, Y_test, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch)
 
 
 def build_model(img_channels, img_rows, img_cols, nb_classes):
@@ -122,7 +128,7 @@ def read_model_from_file(img_channels, img_rows, img_cols, nb_classes, weightFil
           get activations for a particular layer from the inputs of another layer.
 """
 
-(X_test_verif, Y_test_verif,_,_,_,_,_,_) = read_dataset()
+(_, _,X_test_verif,Y_test_verif,_,_,_,_,_,_) = read_dataset()
 
 def getImage(model, n_in_tests):
     return X_test_verif[n_in_tests]

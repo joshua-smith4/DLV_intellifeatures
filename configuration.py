@@ -18,6 +18,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description='DLV Intellifeatures')
 parser.add_argument('--dataset', required=True)
+parser.add_argument('--mode', default='read')
 args = parser.parse_args()
 #######################################################
 #
@@ -49,8 +50,7 @@ experimental_config = True
 
 # the network is trained from scratch
 #  or read from the saved files
-whichMode = "read"
-#whichMode = "train"
+whichMode = args.mode
 
 # work with a single image or a batch of images
 #dataProcessing = "single"
