@@ -15,7 +15,7 @@ from keras.models import model_from_json
 from keras import backend as K
 
 # visualisation
-from keras.utils.visualize_util import plot
+# from keras.utils.visualize_util import plot
 #
 import basics
 

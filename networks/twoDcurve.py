@@ -15,7 +15,7 @@ from keras.layers import Input, Dense
 import keras.optimizers
 
 # visualisation
-from keras.utils.visualize_util import plot
+# from keras.utils.visualize_util import plot
 
 #
 #import analyze  as analyzeNN

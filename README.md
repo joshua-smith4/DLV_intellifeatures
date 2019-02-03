@@ -100,12 +100,9 @@
 
            pip install -r requirements.txt
 
-12. Install graphviz
+12. Install graphviz following instructions from here: https://graphviz.gitlab.io/_pages/Download/Download_windows.html
 
-           Linux - sudo apt-get install graphviz
-           Mac - brew install graphviz
-
-13. Set up keras environment with a keras config file at ~/.keras/keras.json with the text:
+13. Set up keras environment with a keras config file at ~/.keras/keras.json (in Cygwin terminal) with the text:
 
            {
                "floatx": "float32",

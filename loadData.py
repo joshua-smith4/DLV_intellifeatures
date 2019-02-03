@@ -25,7 +25,7 @@ import keras.optimizers
 
 
 # visualisation
-from keras.utils.visualize_util import plot
+# from keras.utils.visualize_util import plot
 #
 from keras.datasets import mnist
 from keras.utils import np_utils
@@ -184,7 +184,7 @@ def loadData():
         print "Building network model ......"
         model = NN.build_model()
 
-        plot(model, to_file='twoDcurve_pic/model.png')
+        # plot(model, to_file='twoDcurve_pic/model.png')
 
         # visualisation
 
