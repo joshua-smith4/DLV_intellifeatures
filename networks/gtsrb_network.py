@@ -55,10 +55,11 @@ def load_gtsrb_training_data(data_path):
                 labels += [i]
     num_samples = len(imgs)
     boundary = int(num_samples*0.8)
+    imgs, labels = shuffle(imgs, labels, random_state=0)
     X_train = np.array(imgs[0:boundary], dtype=np.float32) / 255.0
     X_test = np.array(imgs[boundary:], dtype=np.float32) / 255.0
-    Y_train = labels[0:boundary]
-    Y_test = labels[boundary:]
+    Y_train = np_utils.to_categorical(labels[0:boundary], nb_classes)
+    Y_test = np_utils.to_categorical(labels[boundary:], nb_classes)
     return X_train, Y_train, X_test, Y_test
 
 dataset_location = 'networks/GTSRB'
@@ -74,10 +75,6 @@ def read_dataset():
     # print(X_train.shape[0], 'train samples')
 
     # convert class vectors to binary class matrices
-    Y_train = np_utils.to_categorical(Y_train, nb_classes)
-    Y_test = np_utils.to_categorical(Y_test, nb_classes)
-    X_train, Y_train = shuffle(X_train, Y_train, random_state=0)
-    X_test, Y_test = shuffle(X_test, Y_test, random_state=0)
     return (X_train, Y_train, X_test, Y_test, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch)
 
 
