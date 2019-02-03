@@ -1,6 +1,6 @@
 import os, struct
 from array import array as pyarray
-from cvxopt.base import matrix
+# from cvxopt.base import matrix
 import numpy as np
 
 def LABELS(index):

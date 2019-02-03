@@ -1,16 +1,16 @@
 import os, struct
 from array import array as pyarray
-from cvxopt.base import matrix
+# from cvxopt.base import matrix
 import numpy as np
 
 import PIL.Image
 
 # FIXME: need actual class names
-def LABELS(index): 
+def LABELS(index):
     ls = labels()
-    if len(ls) > 0: 
+    if len(ls) > 0:
        return ls[index]
-    else: return range(1000)[index] 
+    else: return range(1000)[index]
 
 def labels():
 
@@ -27,17 +27,17 @@ def save(layer,image,filename):
     """
     import cv2
     import copy
-    
+
     image_cv = copy.deepcopy(image)
-    
+
     image_cv = image_cv.transpose(1, 2, 0)
     image_cv[:,:,0] += 103.939
     image_cv[:,:,1] += 116.779
     image_cv[:,:,2] += 123.68
-    
+
     #print(np.amax(image_cv),np.amin(image_cv))
 
-    
+
     cv2.imwrite(filename, image_cv)
 
     # from matplotlib import pyplot
@@ -65,4 +65,3 @@ def show(image):
     ax.xaxis.set_ticks_position('top')
     ax.yaxis.set_ticks_position('left')
     pyplot.show()
-    
