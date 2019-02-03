@@ -68,6 +68,9 @@ def read_dataset():
     (X_train, Y_train, X_test, Y_test) = load_gtsrb_training_data(
         os.path.join(dataset_location, 'Final_Training', 'Images'))
     print('X_train shape:', X_train.shape)
+    print('Y_train length:', len(Y_train))
+    print('X_test shape:', X_test.shape)
+    print('Y_test length:', len(Y_test))
     # print(X_train.shape[0], 'train samples')
 
     # convert class vectors to binary class matrices

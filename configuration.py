@@ -89,7 +89,7 @@ def getAverages():
     elif dataset == "imageNet":
 	    pass
     elif dataset == "gtsrb":
-        (X_train, Y_train, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch) = NN.read_dataset()
+        (X_train, Y_train, _,_,img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch) = NN.read_dataset()
         model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, 'nothing', os.path.join(directory_model_string,'gtsrb-model.h5'))
     print(X_train.shape)
     print(Y_train.shape)
