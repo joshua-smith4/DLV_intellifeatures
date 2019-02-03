@@ -161,11 +161,12 @@ def loadData():
             callbacks=[LearningRateScheduler(lr_schedule),
                 ModelCheckpoint(os.path.join(directory_model_string, 'gtsrb-model.h5'), save_best_only=True)]
                 )
+        model = NN.read_model_from_file(img_channels,img_rows,img_cols,nb_classes,'',os.path.join(directory_model_string, 'gtsrb-model.h5'))
 
 
     elif whichMode == "read" and dataset == "gtsrb":
         print("Start loading model ... ")
-        model = NN.read_model_from_file(3, 48, 48, 43, 'nothing',os.path.join(directory_model_string,'gtsrb-model.h5'))
+        model = NN.read_model_from_file(3, 48, 48, 43, '',os.path.join(directory_model_string,'gtsrb-model.h5'))
         print("Model loaded!")
 
     elif whichMode == "train" and dataset == "imageNet":
