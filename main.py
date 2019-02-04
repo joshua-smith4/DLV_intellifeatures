@@ -113,20 +113,20 @@ def handleOne(model,dc,startIndexOfImage):
                 t = 0
                 while True:
 
-                    print "\ncurrent index: %s."%(str(index))
-                    print "current layer: %s."%(t)
+                    print "current index: %s current layer: %s"%(str(index),t)
+                    # print "current layer: %s."%(t)
 
-                    print "\nhow many dimensions have been changed: %s."%(len(st.manipulated[-1]))
+                    print "how many dimensions have been changed: %s."%(len(st.manipulated[-1]))
 
                     # pick the first element of the queue
-                    print "1) get a manipulated input ..."
+                    # print "1) get a manipulated input ..."
                     (image0,span,numSpan,numDimsToMani) = st.getInfo(index)
 
                     path2 = directory_pic_string+"/temp.png"
-                    print " saved into %s"%(path2)
+                    # print " saved into %s"%(path2)
                     dataBasics.save(index[0],image0,path2)
 
-                    print "2) synthesise region ..."
+                    # print "2) synthesise region ..."
                      # ne: next region, i.e., e_{k+1}
                     (nextSpan,nextNumSpan,numDimsToMani) = regionSynth(model,dataset,image0,st.manipulated[t],t,span,numSpan,numDimsToMani)
                     st.addManipulated(t,nextSpan.keys())
@@ -143,7 +143,7 @@ def handleOne(model,dc,startIndexOfImage):
                     print "spans for the dimensions: %s"%(nextNumSpan)
 
                     if t == k:
-                        print "3) safety analysis ..."
+                        # print "3) safety analysis ..."
                         # wk for the set of counterexamples
                         # rk for the set of images that need to be considered in the next precision
                         # rs remembers how many input images have been processed in the last round

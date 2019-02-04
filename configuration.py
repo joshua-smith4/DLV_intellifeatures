@@ -19,6 +19,8 @@ import argparse
 parser = argparse.ArgumentParser(description='DLV Intellifeatures')
 parser.add_argument('--dataset', required=True)
 parser.add_argument('--mode', default='read')
+parser.add_argument('--numtestimages', type=int, default=50)
+parser.add_argument('--numfeaturedims', type=int, default=5)
 args = parser.parse_args()
 #######################################################
 #
@@ -55,7 +57,7 @@ whichMode = args.mode
 # work with a single image or a batch of images
 #dataProcessing = "single"
 dataProcessing = "batch"
-dataProcessingBatchNum = 50
+dataProcessingBatchNum = args.numtestimages
 
 #######################################################
 #
@@ -78,7 +80,7 @@ errorBounds[-1] = 1.0
 
 (featureDims,span,numSpan,errorBounds,boundOfPixelValue,NN,dataBasics,directory_model_string,directory_statistics_string,directory_pic_string,filterSize) = network_parameters(dataset)
 
-
+featureDims = args.numfeaturedims
 def getAverages():
     if dataset == "mnist":
         (X_train, Y_train, X_test, Y_test, batch_size, nb_epoch) = NN.read_dataset()
