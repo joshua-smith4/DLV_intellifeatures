@@ -151,17 +151,14 @@ def loadData():
         model.compile(loss='categorical_crossentropy',
                         optimizer=sgd,
                         metrics=['accuracy'])
-        def lr_schedule(epoch):
-            return lr * (0.1 ** int(epoch / 10))
         model.fit(X_train,Y_train,
             batch_size=32,
-            nb_epoch=30,
+            nb_epoch=5,
             validation_data=(X_test,Y_test),
             verbose=1,
             shuffle=True,
-            callbacks=[LearningRateScheduler(lr_schedule),
-                ModelCheckpoint(os.path.join(directory_model_string, 'gtsrb-model.h5'), save_best_only=True)]
-                )
+            callbacks=[ModelCheckpoint(os.path.join(directory_model_string, 'gtsrb-model.h5'), save_best_only=True)]
+            )
         model = NN.read_model_from_file(img_channels,img_rows,img_cols,nb_classes,'',os.path.join(directory_model_string, 'gtsrb-model.h5'))
 
 

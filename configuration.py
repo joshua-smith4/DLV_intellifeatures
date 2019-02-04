@@ -81,6 +81,7 @@ errorBounds[-1] = 1.0
 (featureDims,span,numSpan,errorBounds,boundOfPixelValue,NN,dataBasics,directory_model_string,directory_statistics_string,directory_pic_string,filterSize) = network_parameters(dataset)
 
 featureDims = args.numfeaturedims
+
 def getAverages():
     if dataset == "mnist":
         (X_train, Y_train, X_test, Y_test, batch_size, nb_epoch) = NN.read_dataset()
