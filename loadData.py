@@ -164,7 +164,7 @@ def loadData():
 
     elif whichMode == "read" and dataset == "gtsrb":
         print("Start loading model ... ")
-        model = NN.read_model_from_file(3, 48, 48, 43, '',os.path.join(directory_model_string,'gtsrb-model.h5'))
+        model = NN.read_model_from_file(3, 48, 48, 43, os.path.join(directory_model_string,'gtsrb_32.json'),os.path.join(directory_model_string,'gtsrb-model.h5'))
         print("Model loaded!")
 
     elif whichMode == "train" and dataset == "imageNet":
