@@ -136,6 +136,7 @@ def getImage(model, n_in_tests):
 
 def readImage(path):
     im = cv2.resize(cv2.imread(path), (img_rows, img_cols)).astype('float32')
+    im /= 255.0
     im = np.rollaxis(im, -1)
 
     return np.squeeze(im)
