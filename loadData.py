@@ -22,10 +22,10 @@ import scipy.io as sio
 from keras.models import Model, Sequential
 from keras.layers import Input, Dense
 import keras.optimizers
-
+from keras.callbacks import LearningRateScheduler, ModelCheckpoint
 
 # visualisation
-from keras.utils.visualize_util import plot
+# from keras.utils.visualize_util import plot
 #
 from keras.datasets import mnist
 from keras.utils import np_utils
@@ -143,10 +143,28 @@ def loadData():
         model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
         print("Model loaded!")
 
+    elif whichMode == "train" and dataset == "gtsrb":
+        (X_train,Y_train,X_test,Y_test,img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch) = NN.read_dataset()
+        model = NN.build_model(img_channels, img_rows, img_cols, nb_classes)
+        lr = 0.01
+        sgd = keras.optimizers.SGD(lr=lr, decay=1e-6, momentum=0.9, nesterov=True)
+        model.compile(loss='categorical_crossentropy',
+                        optimizer=sgd,
+                        metrics=['accuracy'])
+        model.fit(X_train,Y_train,
+            batch_size=32,
+            nb_epoch=12,
+            validation_data=(X_test,Y_test),
+            verbose=1,
+            shuffle=True,
+            callbacks=[ModelCheckpoint(os.path.join(directory_model_string, 'gtsrb-model.h5'), save_best_only=True)]
+            )
+        model = NN.read_model_from_file(img_channels,img_rows,img_cols,nb_classes,'',os.path.join(directory_model_string, 'gtsrb-model.h5'))
+
+
     elif whichMode == "read" and dataset == "gtsrb":
         print("Start loading model ... ")
-        (X_train,Y_train,img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch) = NN.read_dataset()
-        model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, 'nothing',os.path.join(directory_model_string,'gtsrb-model.h5'))
+        model = NN.read_model_from_file(3, 48, 48, 43, os.path.join(directory_model_string,'gtsrb_32.mat'), os.path.join(directory_model_string,'gtsrb_32.json'))
         print("Model loaded!")
 
     elif whichMode == "train" and dataset == "imageNet":
@@ -184,7 +202,7 @@ def loadData():
         print "Building network model ......"
         model = NN.build_model()
 
-        plot(model, to_file='twoDcurve_pic/model.png')
+        # plot(model, to_file='twoDcurve_pic/model.png')
 
         # visualisation
 

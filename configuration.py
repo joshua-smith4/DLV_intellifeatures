@@ -18,6 +18,9 @@ import argparse
 
 parser = argparse.ArgumentParser(description='DLV Intellifeatures')
 parser.add_argument('--dataset', required=True)
+parser.add_argument('--mode', default='read')
+parser.add_argument('--numtestimages', type=int, default=50)
+parser.add_argument('--numfeaturedims', type=int, default=5)
 args = parser.parse_args()
 #######################################################
 #
@@ -49,13 +52,12 @@ experimental_config = True
 
 # the network is trained from scratch
 #  or read from the saved files
-whichMode = "read"
-#whichMode = "train"
+whichMode = args.mode
 
 # work with a single image or a batch of images
 #dataProcessing = "single"
 dataProcessing = "batch"
-dataProcessingBatchNum = 50
+dataProcessingBatchNum = args.numtestimages
 
 #######################################################
 #
@@ -78,6 +80,7 @@ errorBounds[-1] = 1.0
 
 (featureDims,span,numSpan,errorBounds,boundOfPixelValue,NN,dataBasics,directory_model_string,directory_statistics_string,directory_pic_string,filterSize) = network_parameters(dataset)
 
+featureDims = args.numfeaturedims
 
 def getAverages():
     if dataset == "mnist":
@@ -89,14 +92,11 @@ def getAverages():
     elif dataset == "imageNet":
 	    pass
     elif dataset == "gtsrb":
-        (X_train, Y_train, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch) = NN.read_dataset()
-        model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, 'nothing', os.path.join(directory_model_string,'gtsrb-model.h5'))
-    print(X_train.shape)
-    print(Y_train.shape)
+        (X_train, Y_train, _,_,img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch) = NN.read_dataset()
+        model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, os.path.join(directory_model_string,'gtsrb_32.mat'), os.path.join(directory_model_string,'gtsrb_32.json'))
     Y_train_noncategorical = np.argmax(Y_train, axis=1)
     averages = []
     input_averages = np.zeros((Y_train.shape[1], 1, X_train.shape[1], X_train[0][0].shape[0], X_train[0][0].shape[1]), dtype=np.float32)
-    print('shape {} {}'.format(X_train[0][0].shape, input_averages.shape))
     averages.append(input_averages)
     counts = np.zeros((Y_train.shape[1]), dtype=np.uint32)
 
@@ -110,12 +110,10 @@ def getAverages():
     for i in range(len(model.layers)):
         layerType = [ lt for (l,lt) in NN.getConfig(model) if i == l ]
         if len(layerType) > 0: layerType = layerType[0]
-        print('layer type: {}'.format(layerType))
         layer_input_shape = [1 if x is None else x for x in model.layers[i].output_shape]
         layer_avg = np.zeros([Y_train.shape[1],] + layer_input_shape, dtype=np.float32)
         for j in range(len(counts)):
             lastAverage = averages[i][j]
-            print('last average shape {}'.format(lastAverage.shape))
             if layerType in ['Dropout']:
                 layer_avg[j] = lastAverage
             else:

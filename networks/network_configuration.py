@@ -7,19 +7,6 @@ author: Xiaowei Huang
 import numpy as np
 import os
 
-import mnist_network as NN_mnist
-import cifar10_network as NN_cifar10
-import imageNet_network as NN_imageNet
-import twoDcurve_network as NN_twoDcurve
-import gtsrb_network as NN_gtsrb
-
-
-import mnist
-import cifar10
-import imageNet
-import twoDcurve
-import gtsrb
-
 def network_parameters(dataset):
 
 
@@ -47,6 +34,8 @@ def network_parameters(dataset):
 
 # which dataset to analyse
     if dataset == "mnist":
+        import mnist_network as NN_mnist
+        import mnist
         NN = NN_mnist
         dataBasics = mnist
         directory_model_string = makedirectory("networks/mnist")
@@ -61,6 +50,8 @@ def network_parameters(dataset):
         errorBounds[-1] = 1.0
 
     elif dataset == "twoDcurve":
+        import twoDcurve_network as NN_twoDcurve
+        import twoDcurve
         NN = NN_twoDcurve
         dataBasics = twoDcurve
         directory_model_string = makedirectory("networks/twoDcurve")
@@ -75,6 +66,8 @@ def network_parameters(dataset):
         errorBounds[-1] = 1.0
 
     elif dataset == "cifar10":
+        import cifar10_network as NN_cifar10
+        import cifar10
         NN = NN_cifar10
         dataBasics = cifar10
         directory_model_string = makedirectory("networks/cifar10")
@@ -89,6 +82,8 @@ def network_parameters(dataset):
         errorBounds[-1] = 1.0
 
     elif dataset == "imageNet":
+        import imageNet_network as NN_imageNet
+        import imageNet
         NN = NN_imageNet
         dataBasics = imageNet
         directory_model_string = makedirectory("networks/imageNet")
@@ -103,6 +98,8 @@ def network_parameters(dataset):
         errorBounds[-1] = 125
 
     elif dataset == "gtsrb":
+        import gtsrb_network as NN_gtsrb
+        import gtsrb
         NN = NN_gtsrb
         dataBasics = gtsrb
         directory_model_string = makedirectory("networks/GTSRB")
