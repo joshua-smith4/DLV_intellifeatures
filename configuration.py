@@ -93,7 +93,7 @@ def getAverages():
 	    pass
     elif dataset == "gtsrb":
         (X_train, Y_train, _,_,img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch) = NN.read_dataset()
-        model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, 'nothing', os.path.join(directory_model_string,'gtsrb-model.h5'))
+        model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, os.path.join(directory_model_string,'gtsrb_32.mat'), os.path.join(directory_model_string,'gtsrb_32.json'))
     Y_train_noncategorical = np.argmax(Y_train, axis=1)
     averages = []
     input_averages = np.zeros((Y_train.shape[1], 1, X_train.shape[1], X_train[0][0].shape[0], X_train[0][0].shape[1]), dtype=np.float32)
