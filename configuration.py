@@ -123,8 +123,8 @@ def getAverages():
         averages.append(layer_avg)
     return averages
 
-averages = getAverages()
-print('finished averages')
+#averages = getAverages()
+#print('finished averages')
 #######################################################
 #
 #  2. The following are parameters for safety checking
