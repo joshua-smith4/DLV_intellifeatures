@@ -17,6 +17,7 @@ from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Convolution2D, MaxPooling2D
 from keras import backend as K
 from keras.utils import np_utils
+from skimage import color, exposure, transform, io
 
 from keras.optimizers import SGD
 #
@@ -49,6 +50,14 @@ def load_gtsrb_training_data(data_path):
                 if not file_path.endswith('.ppm'):
                     continue
                 img = cv2.imread(file_path)
+		        hsv = color.rgb2hsv(img)
+		        hsv[:,:,2] = exposure.equalize_hist(hsv[:,:,2])
+		        img = color.hsv2rgb(hsv)
+		        min_side = min(img.shape[:-1])
+    		    centre = img.shape[0]//2, img.shape[1]//2
+    		    img = img[centre[0]-min_side//2:centre[0]+min_side//2,
+              		      centre[1]-min_side//2:centre[1]+min_side//2,
+              		      :]
                 img = cv2.resize(img, (img_rows, img_cols))
                 img = np.rollaxis(img, -1)
                 imgs += [img]
@@ -56,8 +65,8 @@ def load_gtsrb_training_data(data_path):
     num_samples = len(imgs)
     boundary = int(num_samples*0.8)
     imgs, labels = shuffle(imgs, labels, random_state=0)
-    X_train = np.array(imgs[0:boundary], dtype=np.float32) / 255.0
-    X_test = np.array(imgs[boundary:], dtype=np.float32) / 255.0
+    X_train = np.array(imgs[0:boundary], dtype=np.float32)
+    X_test = np.array(imgs[boundary:], dtype=np.float32)
     Y_train = np_utils.to_categorical(labels[0:boundary], nb_classes)
     Y_test = np_utils.to_categorical(labels[boundary:], nb_classes)
     return X_train, Y_train, X_test, Y_test
