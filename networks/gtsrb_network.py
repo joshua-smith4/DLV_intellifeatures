@@ -50,14 +50,14 @@ def load_gtsrb_training_data(data_path):
                 if not file_path.endswith('.ppm'):
                     continue
                 img = cv2.imread(file_path)
-		        hsv = color.rgb2hsv(img)
-		        hsv[:,:,2] = exposure.equalize_hist(hsv[:,:,2])
-		        img = color.hsv2rgb(hsv)
-		        min_side = min(img.shape[:-1])
-    		    centre = img.shape[0]//2, img.shape[1]//2
-    		    img = img[centre[0]-min_side//2:centre[0]+min_side//2,
-              		      centre[1]-min_side//2:centre[1]+min_side//2,
-              		      :]
+                hsv = color.rgb2hsv(img)
+                hsv[:,:,2] = exposure.equalize_hist(hsv[:,:,2])
+                img = color.hsv2rgb(hsv)
+                min_side = min(img.shape[:-1])
+                centre = img.shape[0]//2, img.shape[1]//2
+                img = img[centre[0]-min_side//2:centre[0]+min_side//2,
+                        centre[1]-min_side//2:centre[1]+min_side//2,
+                        :]
                 img = cv2.resize(img, (img_rows, img_cols))
                 img = np.rollaxis(img, -1)
                 imgs += [img]
