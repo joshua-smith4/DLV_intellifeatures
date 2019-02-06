@@ -153,7 +153,7 @@ def loadData():
                         metrics=['accuracy'])
         model.fit(X_train,Y_train,
             batch_size=32,
-            nb_epoch=5,
+            nb_epoch=12,
             validation_data=(X_test,Y_test),
             verbose=1,
             shuffle=True,
@@ -164,7 +164,7 @@ def loadData():
 
     elif whichMode == "read" and dataset == "gtsrb":
         print("Start loading model ... ")
-        model = NN.read_model_from_file(3, 48, 48, 43, os.path.join(directory_model_string,'gtsrb_32.json'),os.path.join(directory_model_string,'gtsrb-model.h5'))
+        model = NN.read_model_from_file(3, 48, 48, 43, os.path.join(directory_model_string,'gtsrb_32.mat'), os.path.join(directory_model_string,'gtsrb_32.json'))
         print("Model loaded!")
 
     elif whichMode == "train" and dataset == "imageNet":
