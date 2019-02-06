@@ -17,10 +17,8 @@ from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Convolution2D, MaxPooling2D
 from keras import backend as K
 from keras.utils import np_utils
-# from skimage import color, exposure, transform, io
 
 from keras.optimizers import SGD
-#
 
 batch_size = 32
 nb_classes = 43
@@ -141,7 +139,7 @@ def read_model_from_file(img_channels, img_rows, img_cols, nb_classes, weightFil
 (_, _,X_test_verif,Y_test_verif,_,_,_,_,_,_) = read_dataset()
 
 def getImage(model, n_in_tests):
-    return X_test_verif[n_in_tests], np.argmax(Y_test_verif[n_in_tests])
+    return X_test_verif[n_in_tests]
 
 
 def readImage(path):

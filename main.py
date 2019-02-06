@@ -62,8 +62,6 @@ def handleOne(model,dc,startIndexOfImage):
     # get an image to interpolate
     global np
     image = NN.getImage(model,startIndexOfImage)
-    if dataset == 'gtsrb':
-        image, originalClass = NN.getImage(model,startIndexOfImage)
     print("the shape of the input is "+ str(image.shape))
     #image = np.array([3.58747339,1.11101673])
 
@@ -89,10 +87,8 @@ def handleOne(model,dc,startIndexOfImage):
             st.addImages(model,[image])
             print "\nstart checking the safety of layer "+str(k)
             print "the current context is %s"%(st.numSpans)
-            if dataset == 'gtsrb':
-                (_,originalConfident) = NN.predictWithImage(model,image)
-            else:
-                (originalClass,originalConfident) = NN.predictWithImage(model,image)
+
+            (originalClass,originalConfident) = NN.predictWithImage(model,image)
             origClassStr = dataBasics.LABELS(int(originalClass))
 
             path0="%s/%s_original_as_%s_with_confidence_%s.png"%(directory_pic_string,startIndexOfImage,origClassStr,originalConfident)
