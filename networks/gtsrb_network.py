@@ -82,7 +82,7 @@ def build_model(img_channels, img_rows, img_cols, nb_classes):
 
     model = Sequential()
 
-    model.add(Convolution2D(32, 3, 3, border_mode='same', input_shape=(3, IMG_SIZE, IMG_SIZE), activation='relu'))
+    model.add(Convolution2D(32, 3, 3, border_mode='same', input_shape=(3, img_rows, img_cols), activation='relu'))
     model.add(Convolution2D(32, 3, 3, activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Dropout(0.2))
