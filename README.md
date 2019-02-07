@@ -51,6 +51,7 @@
            git checkout <desired_branch> (eg. origin/orig_dlv, origin/intellifeatures)
            python main.py --dataset=[mnist,cifar10,gtsrb] --mode=[train,read] --numtestimages=N --numfeaturedims=M
 
+10. In order to run GTSRB, you must first download the training dataset here: http://benchmark.ini.rub.de/Dataset/GTSRB_Final_Training_Images.zip and place the folder "Final_Training" at the location networks/GTSRB
 
 ## Windows Installation Instructions
 
