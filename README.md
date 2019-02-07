@@ -49,7 +49,7 @@
 9. To run the DLV, checkout the desired branch
 
            git checkout <desired_branch> (eg. origin/orig_dlv, origin/intellifeatures)
-           python main.py --dataset [mnist,cifar10,gtsrb,imageNet]
+           python main.py --dataset=[mnist,cifar10,gtsrb] --mode=[train,read] --numtestimages=N --numfeaturedims=M
 
 
 ## Windows Installation Instructions
