@@ -49,10 +49,10 @@
 9. To run the DLV, checkout the desired branch
 
            git checkout <desired_branch> (eg. origin/orig_dlv, origin/intellifeatures)
-           python main.py --dataset [mnist,cifar10,gtsrb,imageNet]
+           python main.py --dataset=[mnist,cifar10,gtsrb] --mode=[train,read] --numtestimages=N --numfeaturedims=M
 
 
-## Windows Installation Instructions
+## Windows Installation Instructions - Work In Progress
 
 1. Download and install git by following the instructions here: https://git-scm.com/downloads
 2. Download and install the Visual Studio C++ build tools using visual studio installer
