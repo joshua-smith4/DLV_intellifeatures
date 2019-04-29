@@ -2,7 +2,7 @@
 
 ## Linux/Mac Installation Instructions
 
-1. Install Python 2.7 and pip using the instructions found here: https://wiki.python.org/moin/BeginnersGuide/Download
+1. Jim Python 2.7 and pip using the instructions found here: https://wiki.python.org/moin/BeginnersGuide/Download
 2. Install virtualenv using pip
 
            pip install virtualenv
